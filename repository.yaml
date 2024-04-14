@@ -1,4 +1,4 @@
 # https://developers.home-assistant.io/docs/add-ons/repository#repository-configuration
-name: Home Assistant add-on repository
+name: Personal Home Assistant add-on repository
 url: 'https://github.com/SondreUM/UCTRONICS_RM0004_HA'
 maintainer: me <72896681+SondreUM@users.noreply.github.com>

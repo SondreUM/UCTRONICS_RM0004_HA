@@ -1,6 +1,7 @@
 #include "rpiInfo.h"
 
 #include <arpa/inet.h>
+#include <assert.h>
 #include <fcntl.h>
 #include <linux/i2c-dev.h>
 #include <linux/i2c.h>
@@ -19,49 +20,39 @@
 
 #include "st7735.h"
 
-/*
- * Get the IP address of wlan0 or eth0
+/**
+ * @brief Get the IP address of wlan0 or eth0
+ *
+ * @param ip_addr buffer to store the IP address, must be at least 16 bytes long
  */
-
-char *get_ip_address(void) {
+void get_ip_address(char *ip_addr) {
     int fd, symbol = 0;
     struct ifreq ifr;
+    char *buffer = "xxx.xxx.xxx.xxx";
 
-    if (IPADDRESS_TYPE == ETH0_ADDRESS) {
-        fd = socket(AF_INET, SOCK_DGRAM, 0);
+    // set default value
+    strncpy(ip_addr, buffer, strlen(buffer));
 
-        /* Get an IPv4 IP address */
-        ifr.ifr_addr.sa_family = AF_INET;
+    fd = socket(AF_INET, SOCK_DGRAM, 0);
 
-        /* Get IP address attached to "eth0" */
+    // if failed to open socket, return default value
+    if (fd == -1) {
+        perror("Socket creation error");
+        return;
+    }
+    ifr.ifr_addr.sa_family = AF_INET;
+
+    if (IPADDRESS_TYPE == ETH0_ADDRESS) {  // get the IP address of eth0
         strncpy(ifr.ifr_name, "eth0", IFNAMSIZ - 1);
-        symbol = ioctl(fd, SIOCGIFADDR, &ifr);
-        close(fd);
-
-        if (symbol == 0) {
-            return inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
-        } else {
-            char *buffer = "xxx.xxx.xxx.xxx";
-            return buffer;
-        }
-
     } else if (IPADDRESS_TYPE == WLAN0_ADDRESS) {
-        fd = socket(AF_INET, SOCK_DGRAM, 0);
-        /* I want to get an IPv4 IP address */
-        ifr.ifr_addr.sa_family = AF_INET;
-        /* I want IP address attached to "wlan0" */
+        // get the IP address of wlan0
         strncpy(ifr.ifr_name, "wlan0", IFNAMSIZ - 1);
-        symbol = ioctl(fd, SIOCGIFADDR, &ifr);
-        close(fd);
-        if (symbol == 0) {
-            return inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
-        } else {
-            char *buffer = "xxx.xxx.xxx.xxx";
-            return buffer;
-        }
-    } else {
-        char *buffer = "xxx.xxx.xxx.xxx";
-        return buffer;
+    }
+    symbol = ioctl(fd, SIOCGIFADDR, &ifr);
+    close(fd);
+    if (symbol == 0) {
+        strncpy(ip_addr, inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr),
+                strlen(buffer));
     }
 }
 

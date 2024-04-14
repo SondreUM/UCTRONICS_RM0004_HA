@@ -21,7 +21,7 @@
 #define CUSTOM_DISPLAY "SkyNet"
 /************************Turn off the IP display. Can customize the display****************/
 
-char *get_ip_address(void);
+void get_ip_address(char *ip_addr);
 void get_sd_memory(uint32_t *MemSize, uint32_t *freesize);
 void get_cpu_memory(float *Totalram, float *freeram);
 uint8_t get_temperature(void);
