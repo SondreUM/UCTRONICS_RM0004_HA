@@ -174,11 +174,11 @@ uint8_t get_cpu_message(void)
     int usCpu = 0;
     int syCpu = 0;
 
-    fp=popen("top -bn1 | grep %Cpu | awk '{printf \"%.2f\", $(2)}'","r");    //Gets the load on the CPU
+    fp=popen("top -bn1 | grep -m 1 -e CPU | awk '{printf \"%.2f\", $(2)}'","r");    //Gets the load on the CPU
     fgets(usCpuBuff, sizeof(usCpuBuff),fp);                                    //Read the user CPU load
     pclose(fp);    
 
-    fp=popen("top -bn1 | grep %Cpu | awk '{printf \"%.2f\", $(4)}'","r");    //Gets the load on the CPU
+    fp=popen("top -bn1 | grep -m 1 -e CPU | awk '{printf \"%.2f\", $(4)}'","r");    //Gets the load on the CPU
     fgets(syCpubuff, sizeof(syCpubuff),fp);                                    //Read the system CPU load
     pclose(fp);   
     usCpu = atoi(usCpuBuff);
