@@ -24,9 +24,9 @@
  */
 
 char *get_ip_address(void) {
-    int fd;
+    int fd, symbol = 0;
     struct ifreq ifr;
-    int symbol = 0;
+
     if (IPADDRESS_TYPE == ETH0_ADDRESS) {
         fd = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -44,6 +44,7 @@ char *get_ip_address(void) {
             char *buffer = "xxx.xxx.xxx.xxx";
             return buffer;
         }
+
     } else if (IPADDRESS_TYPE == WLAN0_ADDRESS) {
         fd = socket(AF_INET, SOCK_DGRAM, 0);
         /* I want to get an IPv4 IP address */
@@ -150,21 +151,32 @@ uint8_t get_temperature(void) {
  */
 uint8_t get_cpu_message(void) {
     FILE *fp;
-    uint8_t usCpuBuff[5] = {0};
-    uint8_t syCpubuff[5] = {0};
-    int usCpu = 0;
-    int syCpu = 0;
+    char cpu_usr_buf[5] = {0};
+    char cpy_sys_buf[5] = {0};
+    int cpu_usr = 0;
+    int cpu_sys = 0;
 
-    fp = popen("top -bn1 | grep %Cpu | awk '{printf \"%.2f\", $(2)}'",
-               "r");                          // Gets the load on the CPU
-    fgets(usCpuBuff, sizeof(usCpuBuff), fp);  // Read the user CPU load
+    /*
+     * top in Hassos has names on values than normal ubuntu distro
+     * Example:
+     *  Mem: 1489420K used, 2392776K free, 1436K shrd, 89600K buff, 676408K cached
+     *  CPU:   2% usr   2% sys   0% nic  95% idle   0% io   0% irq   0% sirq
+     *  Load average: 0.92 0.92 0.90 2/824 365
+     *
+     * CPU row in ubuntu is named %Cpu(s)
+     */
+
+    fp = popen("top -bn1 | grep CPU | awk '{printf \"%.2f\", $(2)}'",
+               "r");                              // Gets the load on the CPU
+    fgets(cpu_usr_buf, sizeof(cpu_usr_buf), fp);  // Read the user CPU load
     pclose(fp);
 
-    fp = popen("top -bn1 | grep %Cpu | awk '{printf \"%.2f\", $(4)}'",
-               "r");                          // Gets the load on the CPU
-    fgets(syCpubuff, sizeof(syCpubuff), fp);  // Read the system CPU load
+    fp = popen("top -bn1 | grep CPU | awk '{printf \"%.2f\", $(4)}'",
+               "r");                              // Gets the load on the CPU
+    fgets(cpy_sys_buf, sizeof(cpy_sys_buf), fp);  // Read the system CPU load
     pclose(fp);
-    usCpu = atoi(usCpuBuff);
-    syCpu = atoi(syCpubuff);
-    return usCpu + syCpu;
+
+    cpu_usr = atoi(cpu_usr_buf);
+    cpu_sys = atoi(cpy_sys_buf);
+    return cpu_usr + cpu_sys;
 }
