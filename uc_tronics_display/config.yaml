@@ -1,6 +1,6 @@
 name: "UCTronics Display"
 description: "UCTronics LCD Display"
-url: "https://github.com/UCTRONICS/UCTRONICS_RM0004_HA/tree/main/uc_tronics_display"
+url: "https://github.com/SondreUM/UCTRONICS_RM0004_HA/tree/main/uc_tronics_display"
 version: "1.1.2"
 slug: "uc_tronics_display"
 init: false
