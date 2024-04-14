@@ -1,0 +1,4 @@
+# ignore object files
+*.o
+# ignore executable
+uc_tronics_display/lcd_display/display
