@@ -149,7 +149,7 @@ uint8_t get_temperature(void) {
 /*
  * Get cpu usage
  */
-uint8_t get_cpu_message(void) {
+uint8_t get_cpu_usage(void) {
     FILE *fp;
     char cpu_usr_buf[5] = {0};
     char cpy_sys_buf[5] = {0};
@@ -166,12 +166,12 @@ uint8_t get_cpu_message(void) {
      * CPU row in ubuntu is named %Cpu(s)
      */
 
-    fp = popen("top -bn1 | grep CPU | awk '{printf \"%.2f\", $(2)}'",
+    fp = popen("top -bn1 | grep -m -1 -e CPU | awk '{printf \"%.2f\", $(2)}'",
                "r");                              // Gets the load on the CPU
     fgets(cpu_usr_buf, sizeof(cpu_usr_buf), fp);  // Read the user CPU load
     pclose(fp);
 
-    fp = popen("top -bn1 | grep CPU | awk '{printf \"%.2f\", $(4)}'",
+    fp = popen("top -bn1 | grep -m 1 -e CPU | awk '{printf \"%.2f\", $(4)}'",
                "r");                              // Gets the load on the CPU
     fgets(cpy_sys_buf, sizeof(cpy_sys_buf), fp);  // Read the system CPU load
     pclose(fp);
